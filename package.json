@@ -14,7 +14,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha ./tests/*/*.spec.js",
+    "test": "./node_modules/mocha/bin/mocha --exit ./tests/*/*.spec.js",
     "start": "node app.js"
   },
   "repository": {
