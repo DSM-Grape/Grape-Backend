@@ -10,7 +10,10 @@
     "morgan": "^1.9.0",
     "sequelize": "^4.37.6",
     "should": "^13.2.1",
-    "supertest": "^3.0.0"
+    "supertest": "^3.0.0",
+    "coveralls": "latest",
+    "mocha-lcov-reporter": "latest",
+    "blanket-node": "latest"
   },
   "devDependencies": {},
   "scripts": {
