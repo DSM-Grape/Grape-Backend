@@ -21,7 +21,7 @@
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --exit ./tests/*/*.spec.js",
     "start": "node app.js",
-    "doc-edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit"
+    "doc-edit": "swagger_swagger_fileName=swagger/swagger.yaml ./node_modules/.bin/swagger project edit"
   },
   "repository": {
     "type": "git",
