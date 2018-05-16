@@ -1,69 +1,60 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Hello World App
-# during dev, should point to your local machine
+  title: Grape API
 host: localhost:3000
-# basePath prefixes all resource paths 
 basePath: /
-securityDefinitions:
-  api_key:
-    type: apiKey
-    in: header
-    name: Authorization
 schemes:
-  # tip: remove http to make production-grade
   - http
-  - https
-# format of bodies a client can send (Content-Type)
 consumes:
   - application/json
-# format of the responses to the client (Accepts)
 produces:
   - application/json
 paths:
-  /:
-    # binds a127 app logic to a route
+  /auth:
     x-swagger-router-controller: auth/auth.controller
-    get:
-      security:
-        - api_key: []
-      description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: hello
+    post:
+      description: 서비스 자체 계정 로그인
       parameters:
-        - name: name
-          in: query
-          description: The name of the person to whom to say hello
-          required: false
+        - name: id
+          in: formData
+          description: ID
+          required: true
+          type: string
+        - name: pw
+          in: formData
+          description: 비밀번호
+          required: true
           type: string
       responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
-        "400":
-          description: Failed
-          schema:
-            $ref: "#/definitions/HelloWorldResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /swagger:
-    x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
-definitions:
-  HelloWorldResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
-  ErrorResponse:
-    required:
-      - message
-    properties:
-      message:
-        type: string
+        200:
+          description: 로그인 성공
+          examples:
+            application/json: {
+              accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlkZW50aXR5IjoiYSIsInR5cGUiOiJhY2Nlc3MiLCJleHAiOjE1NDA1NTc0NDYsImp0aSI6ImJiN2M3MjJmLTZkZjMtNDljYy1iZTk5LWRkMjMzNDU1NDRjZSIsIm5iZiI6MTUwOTAyMTQ0NiwiaWF0IjoxNTA5MDIxNDQ2fQ.wmytxSuQlH-KjhxO2EzrIioWHWgEnyiqWpRBwWuM15M,
+              refreshToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MTM5MDQ3NjMsImlkZW50aXR5IjoibmlsIiwiZnJlc2giOmZhbHNlLCJqdGkiOiI1Yzg1ZDAxNy1lYjIwLTRmYjgtYmVhYi1iYmYyZTQyY2NlYmYiLCJuYmYiOjE1MTM2NDU1NjMsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE1MTM2NDU1NjN9.075C0_-b-oqSWc-jz7G35y00erRVntpcqN9uMIAnvfI
+            }
+        401:
+          description: 로그인 실패(알맞지 않은 ID/PW)
+  /refresh:
+    post:
+      description: JWT access token refresh
+      parameters:
+        - name: Authorization
+          in: header
+          description: Refresh token
+          required: true
+          type: string
+      responses:
+        200:
+          description: Token refresh 성공, access token 응답
+          examples:
+            application/json: {
+              accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlkZW50aXR5IjoiYSIsInR5cGUiOiJhY2Nlc3MiLCJleHAiOjE1NDA1NTc0NDYsImp0aSI6ImJiN2M3MjJmLTZkZjMtNDljYy1iZTk5LWRkMjMzNDU1NDRjZSIsIm5iZiI6MTUwOTAyMTQ0NiwiaWF0IjoxNTA5MDIxNDQ2fQ.wmytxSuQlH-KjhxO2EzrIioWHWgEnyiqWpRBwWuM15M
+            }
+        205:
+          description: 해당 refresh token이 발생한 로그인 이후로, 비밀번호가 1번 이상 변경되어 재로그인 필요
+        401:
+          description: Refresh token이 만료됨
+        422:
+          description: Refresh token을 해석할 수 없음
