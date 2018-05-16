@@ -11,6 +11,88 @@ consumes:
 produces:
   - application/json
 paths:
+  /check/id/{id}:
+    get:
+      description: 서비스 자체 계정 회원가입을 위한 ID 존재 여부 체크
+      parameters:
+        - name: id
+          in: path
+          description: 존재 여부를 체크할 ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: 존재하지 않음(회원가입 가능)
+        409:
+          description: 존재함(ID가 중복되어 회원가입 불가능)
+  /email/certify/{email}:
+    get:
+      description: 이메일 인증번호 전송
+      parameters:
+        - name: email
+          in: path
+          description: 인증번호를 전송할 이메일
+          required: true
+          type: string
+      responses:
+        200:
+          description: 인증번호 전송 성공
+        204:
+          description: 인증번호 전송이 불가능한 이메일
+    post:
+      description: 이메일 인증번호 인증
+      parameters:
+        - name: email
+          in: path
+          description: 인증 대상 이메일
+          required: true
+          type: string
+        - name: code
+          in: formData
+          description: 인증번호
+          required: true
+          type: string
+      responses:
+        200:
+          description: 인증 성공
+        401:
+          description: 인증 실패
+  /signup:
+    post:
+      description: 서비스 자체 계정 회원가입
+      parameters:
+        - name: id
+          in: formData
+          description: ID
+          required: true
+          type: string
+        - name: pw
+          in: formData
+          description: 비밀번호
+          required: true
+          type: string
+        - name: nickname
+          in: formData
+          description: 닉네임
+          required: true
+          type: string
+        - name: email
+          in: formData
+          description: 이메일
+          required: true
+          type: string
+      responses:
+        201:
+          description: 회원가입 성공
+        401:
+          description: 인증되지 않은 이메일
+        409:
+          description: 회원가입 실패(중복되는 필드가 있음)
+          examples:
+            application/json: {
+              duplicate: id
+            }
+        
   /auth:
     x-swagger-router-controller: auth/auth.controller
     post:
@@ -36,6 +118,60 @@ paths:
             }
         401:
           description: 로그인 실패(알맞지 않은 ID/PW)
+
+  /signup/facebook:
+    post:
+      description: 페이스북 계정 회원가입
+      parameters:
+        - name: id
+          in: formData
+          description: ID
+          required: true
+          type: string
+        - name: nickname
+          in: formData
+          description: 닉네임
+          required: true
+          type: string
+        - name: email
+          in: formData
+          description: 이메일
+          required: true
+          type: string
+      responses:
+        201:
+          description: 회원가입 성공
+        204:
+          description: 존재하지 않는 페이스북 ID
+        401:
+          description: 인증되지 않은 이메일
+
+  /auth/facebook:
+    post:
+      description: 페이스북 로그인
+      parameters:
+        - name: id
+          in: formData
+          description: 페이스북 ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: 로그인 성공
+          examples:
+            application/json: {
+              accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlkZW50aXR5IjoiYSIsInR5cGUiOiJhY2Nlc3MiLCJleHAiOjE1NDA1NTc0NDYsImp0aSI6ImJiN2M3MjJmLTZkZjMtNDljYy1iZTk5LWRkMjMzNDU1NDRjZSIsIm5iZiI6MTUwOTAyMTQ0NiwiaWF0IjoxNTA5MDIxNDQ2fQ.wmytxSuQlH-KjhxO2EzrIioWHWgEnyiqWpRBwWuM15M,
+              refreshToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MTM5MDQ3NjMsImlkZW50aXR5IjoibmlsIiwiZnJlc2giOmZhbHNlLCJqdGkiOiI1Yzg1ZDAxNy1lYjIwLTRmYjgtYmVhYi1iYmYyZTQyY2NlYmYiLCJuYmYiOjE1MTM2NDU1NjMsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE1MTM2NDU1NjN9.075C0_-b-oqSWc-jz7G35y00erRVntpcqN9uMIAnvfI
+            }
+        202:
+          description: 페이스북 ID는 존재하나, 회원가입 절차(POST /signup/facebook) 필요. 해당 페이스북 ID에 대한 이름 응답
+          examples:
+            application/json: {
+              name: 조민규
+            }
+        204:
+          description: 존재하지 않는 페이스북 ID
+          
   /refresh:
     post:
       description: JWT access token refresh
@@ -52,8 +188,10 @@ paths:
             application/json: {
               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlkZW50aXR5IjoiYSIsInR5cGUiOiJhY2Nlc3MiLCJleHAiOjE1NDA1NTc0NDYsImp0aSI6ImJiN2M3MjJmLTZkZjMtNDljYy1iZTk5LWRkMjMzNDU1NDRjZSIsIm5iZiI6MTUwOTAyMTQ0NiwiaWF0IjoxNTA5MDIxNDQ2fQ.wmytxSuQlH-KjhxO2EzrIioWHWgEnyiqWpRBwWuM15M
             }
+        204:
+          description: 계정이 탈퇴됨
         205:
-          description: 해당 refresh token이 발생한 로그인 이후로, 비밀번호가 1번 이상 변경되어 재로그인 필요
+          description: 해당 refresh token이 발생한 로그인 이후로, 비밀번호가 1번 이상 변경되어 재로그인 필요(서비스 자체 계정을 사용하는 경우에만 발생)
         401:
           description: Refresh token이 만료됨
         422:
