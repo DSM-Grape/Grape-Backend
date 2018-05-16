@@ -11,20 +11,20 @@ consumes:
 produces:
   - application/json
 paths:
-  /check/id/{id}:
+  /check/email/{email}:
     get:
       description: 서비스 자체 계정 회원가입을 위한 ID 존재 여부 체크
       parameters:
-        - name: id
+        - name: email
           in: path
-          description: 존재 여부를 체크할 ID
+          description: 존재 여부를 체크할 이메일
           required: true
           type: string
       responses:
         200:
           description: 존재하지 않음(회원가입 가능)
         409:
-          description: 존재함(ID가 중복되어 회원가입 불가능)
+          description: 존재함(이메일이 중복되어 회원가입 불가능)
   /email/certify/{email}:
     get:
       description: 이메일 인증번호 전송
@@ -61,9 +61,9 @@ paths:
     post:
       description: 서비스 자체 계정 회원가입
       parameters:
-        - name: id
+        - name: email
           in: formData
-          description: ID
+          description: 이메일
           required: true
           type: string
         - name: pw
@@ -76,11 +76,6 @@ paths:
           description: 닉네임
           required: true
           type: string
-        - name: email
-          in: formData
-          description: 이메일
-          required: true
-          type: string
       responses:
         201:
           description: 회원가입 성공
@@ -90,7 +85,7 @@ paths:
           description: 회원가입 실패(중복되는 필드가 있음)
           examples:
             application/json: {
-              duplicate: id
+              duplicate: email
             }
         
   /auth:
@@ -98,9 +93,9 @@ paths:
     post:
       description: 서비스 자체 계정 로그인
       parameters:
-        - name: id
+        - name: email
           in: formData
-          description: ID
+          description: 이메일
           required: true
           type: string
         - name: pw
@@ -117,7 +112,7 @@ paths:
               refreshToken: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MTM5MDQ3NjMsImlkZW50aXR5IjoibmlsIiwiZnJlc2giOmZhbHNlLCJqdGkiOiI1Yzg1ZDAxNy1lYjIwLTRmYjgtYmVhYi1iYmYyZTQyY2NlYmYiLCJuYmYiOjE1MTM2NDU1NjMsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE1MTM2NDU1NjN9.075C0_-b-oqSWc-jz7G35y00erRVntpcqN9uMIAnvfI
             }
         401:
-          description: 로그인 실패(알맞지 않은 ID/PW)
+          description: 로그인 실패(알맞지 않은 Email/PW)
 
   /signup/facebook:
     post:
@@ -125,7 +120,7 @@ paths:
       parameters:
         - name: id
           in: formData
-          description: ID
+          description: 페이스북 ID
           required: true
           type: string
         - name: nickname
