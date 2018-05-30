@@ -1,98 +1,32 @@
+/* eslint import/no-unresolved: off */
+/* eslint import/no-absolute-path: off */
+const fs = require('fs');
+const path = require('path');
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize(
-  'grape',
-  'root',
-  process.env.GRAPE_MYSQL_PW || '',
-  {
-    host: 'localhost',
-    dialect: 'mysql',
-  },
-);
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development'; // 'development', 'test', 'production' 3 cases
+const config = require('/app/config/grape/config')[env];
 
-const accounts = sequelize.define('tbl_accounts', {
-  uuid: {
-    type: Sequelize.CHAR(32),
-    primaryKey: true,
-  },
-  id: {
-    type: Sequelize.STRING(127),
-    unique: true,
-  },
-  password: {
-    type: Sequelize.STRING(200),
-    allowNull: true,
-    defaultValue: null,
-  },
-  plan: {
-    type: Sequelize.ENUM('FREE', 'BUSINESS', 'FIRST'),
-    defaultValue: 'FREE',
-  },
-  email: {
-    type: Sequelize.STRING(63),
-    allowNull: true,
-    defaultValue: null,
-  },
-  nickname: {
-    type: Sequelize.STRING(63),
-    allowNull: true,
-    defaultValue: null,
-  },
-}, {
-  timestamps: false,
-});
+const db = {};
 
-const projects = sequelize.define('tbl_projects', {
-  id: {
-    type: Sequelize.INTEGER(11),
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  owner_uuid: {
-    type: Sequelize.CHAR(32),
-    references: {
-      model: accounts,
-      key: 'uuid',
-    },
-  },
-  name: {
-    type: Sequelize.STRING(127),
-  },
-  apidoc_json: {
-    type: Sequelize.TEXT,
-    defaultValue: null,
-  },
-}, {
-  timestamps: false,
-});
+const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-const projectMembers = sequelize.define('tbl_project_members', {
-  id: {
-    type: Sequelize.INTEGER(11),
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  project_id: {
-    type: Sequelize.INTEGER(11),
-    references: {
-      model: projects,
-      key: 'id',
-    },
-  },
-  member_uuid: {
-    type: Sequelize.CHAR(32),
-    references: {
-      model: accounts,
-      key: 'uuid',
-    },
-  },
-  role: {
-    type: Sequelize.ENUM('MEMBER', 'MAINTAINER', 'OWNER'),
-  },
-}, {
-  timestamps: false,
-});
+fs.readdirSync(__dirname)
+  .filter(filename => (filename.indexOf('.') !== 0) && (filename !== basename) && (filename.slice(-3) === '.js'))
+  .forEach((filename) => {
+    const model = sequelize.import(path.join(__dirname, filename));
+    db[model.name] = model;
+  });
 
-sequelize.sync();
+Object.keys(db)
+  .forEach((modelName) => {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
+    }
+  });
 
-module.exports = sequelize;
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db;
