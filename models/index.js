@@ -11,7 +11,7 @@ const sequelize = new Sequelize(
     }
 );
 
-sequelize.define('tbl_accounts', {
+const accounts = sequelize.define('tbl_accounts', {
     uuid: {
         type: Sequelize.CHAR(32),
         primaryKey: true
@@ -39,6 +39,10 @@ sequelize.define('tbl_accounts', {
         allowNull: true,
         defaultValue: null
     }
+}, {
+    timestamps: false
 });
+
+sequelize.sync()
 
 module.exports = sequelize;
