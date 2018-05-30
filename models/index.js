@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
   'grape',
   'root',
-  process.env.GRAPE_MYSQL_PW,
+  process.env.GRAPE_MYSQL_PW || '',
   {
     host: 'localhost',
     dialect: 'mysql',
@@ -74,9 +74,17 @@ const projectMembers = sequelize.define('tbl_project_members', {
   },
   project_id: {
     type: Sequelize.INTEGER(11),
+    references: {
+      model: projects,
+      key: 'id',
+    },
   },
   member_uuid: {
     type: Sequelize.CHAR(32),
+    references: {
+      model: accounts,
+      key: 'uuid',
+    },
   },
   role: {
     type: Sequelize.ENUM('MEMBER', 'MAINTAINER', 'OWNER'),
