@@ -22,14 +22,17 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.12.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.8.2"
+    "eslint-plugin-react": "^7.8.2",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^4.0.2"
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --exit ./tests/*/*.spec.js",
     "start": "node app.js",
     "doc-edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
     "lint": "./node_modules/.bin/eslint . ;exit 0",
-    "lint-fix": "./node_modules/.bin/eslint --fix . ;exit 0"
+    "lint-fix": "./node_modules/.bin/eslint --fix . ;exit 0",
+    "watch": "./node_modules/.bin/gulp"
   },
   "repository": {
     "type": "git",
