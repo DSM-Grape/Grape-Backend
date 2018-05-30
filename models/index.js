@@ -1,5 +1,3 @@
-
-
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(
@@ -63,6 +61,25 @@ const projects = sequelize.define('tbl_projects', {
   apidoc_json: {
     type: Sequelize.TEXT,
     defaultValue: null,
+  },
+}, {
+  timestamps: false,
+});
+
+const projectMembers = sequelize.define('tbl_project_members', {
+  id: {
+    type: Sequelize.INTEGER(11),
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  project_id: {
+    type: Sequelize.INTEGER(11),
+  },
+  member_uuid: {
+    type: Sequelize.CHAR(32),
+  },
+  role: {
+    type: Sequelize.ENUM('MEMBER', 'MAINTAINER', 'OWNER'),
   },
 }, {
   timestamps: false,
