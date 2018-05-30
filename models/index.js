@@ -42,6 +42,30 @@ const accounts = sequelize.define('tbl_accounts', {
   timestamps: false,
 });
 
+const projects = sequelize.define('tbl_projects', {
+  id: {
+    type: Sequelize.INTEGER(11),
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  owner_uuid: {
+    type: Sequelize.CHAR(32),
+    references: {
+      model: accounts,
+      key: 'uuid',
+    },
+  },
+  name: {
+    type: Sequelize.STRING(127),
+  },
+  apidoc_json: {
+    type: Sequelize.TEXT,
+    defaultValue: null,
+  },
+}, {
+  timestamps: false,
+});
+
 sequelize.sync();
 
 module.exports = sequelize;
