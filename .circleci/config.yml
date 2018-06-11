@@ -8,7 +8,7 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:7.10
-      - image: circleci/postgres:latest
+      - image: mongo:3.4.4
 
     working_directory: ~/repo
 
@@ -28,5 +28,5 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
+
       - run: npm test

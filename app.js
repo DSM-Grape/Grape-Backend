@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const router = require('./controllers');
 const morgan = require('morgan');
 const cors = require('cors');
+const db = require('./models');
 
 const config = {
   appRoot: __dirname, // required config
@@ -37,9 +38,9 @@ SwaggerExpress.create(config, (err, swaggerExpress) => {
   // install middleware
   swaggerExpress.register(app);
 
-  app.listen(port, () => {
+  db.then(() => app.listen(port, () => {
     console.log(`the server running on ${port} port`);
-  });
+  }));
 });
 
 module.exports = app;

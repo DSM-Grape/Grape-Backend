@@ -1,31 +1,13 @@
-module.exports = (sequelize, DataTypes) => {
-  const Projects = sequelize.define('tbl_projects', {
-    id: {
-      type: DataTypes.INTEGER(11),
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    // owner_uuid: {
-    //   type: DataTypes.CHAR(32),
-    //   references: {
-    //     model: accounts,
-    //     key: 'uuid',
-    //   },
-    // },
-    name: {
-      type: DataTypes.STRING(127),
-    },
-    apidoc_json: {
-      type: DataTypes.TEXT,
-      defaultValue: null,
-    },
-  }, {
-    timestamps: false,
-  });
+const mongoose = require('mongoose');
+const { Schema } = require('mongoose');
 
-  Projects.associate = (models) => {
-    models.tbl_projects.belongsTo(models.tbl_accounts, {foreignKey: 'owner_uuid'});
-  };
+const projects = Schema({
+  name: { type: String, required: true },
+  apidoc: { type: String, default: null },
+  owner: { type: Schema.Types.ObjectId, ref: 'accounts' },
+  members: [{ type: Schema.Types.ObjectId, ref: 'accounts' }],
+}, {
+  collection: 'projects',
+});
 
-  return Projects;
-};
+module.exports = mongoose.model('projects', projects);
