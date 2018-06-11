@@ -8,6 +8,7 @@ const router = require('./controllers');
 const morgan = require('morgan');
 const cors = require('cors');
 const db = require('./models');
+const debug = require('debug')('server:');
 
 const config = {
   appRoot: __dirname, // required config
@@ -39,7 +40,7 @@ SwaggerExpress.create(config, (err, swaggerExpress) => {
   swaggerExpress.register(app);
 
   db.then(() => app.listen(port, () => {
-    console.log(`the server running on ${port} port`);
+    debug(`the server running on ${port} port`);
   }));
 });
 

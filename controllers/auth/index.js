@@ -1,6 +1,10 @@
 const router = require('express').Router();
-const controller = require('./auth.controller');
+const {
+  hello,
+  emailDuplicationCheck,
+} = require('./auth.controller');
 
-router.route('/').get(controller.hello);
+router.route('/').get(hello);
+router.route('/check/email/:email').get(emailDuplicationCheck);
 
 module.exports = router;
