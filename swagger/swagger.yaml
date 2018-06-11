@@ -27,20 +27,22 @@ paths:
           description: 존재함(이메일이 중복되어 회원가입 불가능)
   /email/certify/{email}:
     get:
-      description: 이메일 인증번호 전송
+      description: 이메일 인증코드 전송
       parameters:
         - name: email
           in: path
-          description: 인증번호를 전송할 이메일
+          description: 인증코드를 전송할 이메일
           required: true
           type: string
       responses:
         200:
-          description: 인증번호 전송 성공
+          description: 인증코드 전송 성공
         204:
-          description: 인증번호 전송이 불가능한 이메일
+          description: 인증코드 전송이 불가능한 이메일
+        409:
+          description: 이메일 중복
     post:
-      description: 이메일 인증번호 인증
+      description: 이메일 인증코드 인증
       parameters:
         - name: email
           in: path
@@ -49,7 +51,7 @@ paths:
           type: string
         - name: code
           in: formData
-          description: 인증번호
+          description: 인증코드
           required: true
           type: string
       responses:

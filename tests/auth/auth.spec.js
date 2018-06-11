@@ -1,6 +1,9 @@
 const app = require('../../app');
 const should = require('should');
 const request = require('supertest');
+const redis = require('redis');
+
+const redisClient = redis.createClient();
 
 describe('auth module check', () => {
 
@@ -33,7 +36,6 @@ describe('auth module check', () => {
     const accounts = require('../../models/accounts');
     const email = 'test@test.com';
 
-
     it('이메일이 중복될 때 409를 반환하는가?', done => {
       new accounts({
         id: 'asv',
@@ -63,4 +65,21 @@ describe('auth module check', () => {
       });
     });
   });
+
+  describe('email send check', () => {
+    const email = 'mingyu.planb@gmail.com'
+
+    it('이메일 전송이 성공하고, redis에 코드가 잘 적재되며 200을 반환하는가?', function(done) {
+      this.timeout(5000);
+
+      request(app)
+        .get(`/email/certify/${email}`)
+        .end((err, res) => {
+          should(res.status).be.equal(200);
+          should(redisClient.exists(email)).be.equal(true);
+
+          done();
+        });
+    });
+  })
 });
