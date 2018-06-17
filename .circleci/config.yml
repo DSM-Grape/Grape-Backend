@@ -16,9 +16,7 @@ jobs:
 
       # Download and cache dependencies
       - restore_cache:
-          keys:
-            - deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
+          key: v1-python-requirements-{{ checksum "Server/requirements.txt" }}
 
       - run:
           command: |
@@ -27,4 +25,14 @@ jobs:
             virtualenv -p python3 .venv
             . .venv/bin/activate
             pip3 install -r requirements.txt
+      
+      - save_cache:
+          key: v1-python-requirements-{{ checksum "Server/requirements.txt" }}
+          paths:
+            - "Server/.venv"
+      
+      - run:
+          command: |
+            cd Server/
+            . .venv/bin/activate
             python3 -m "nose" tests/__init__.py
