@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 from flasgger import Swagger
 from redis import Redis
 # from influxdb import InfluxDBClient
@@ -37,5 +38,7 @@ def create_app(*config_cls) -> Flask:
     #
     # if cfg['INFLUXDB_SETTINGS']['database'] not in cfg['INFLUXDB_CLIENT'].get_list_database():
     #     cfg['INFLUXDB_CLIENT'].create_database(cfg['INFLUXDB_SETTINGS']['database'])
+
+    app_.config['MAIL_CLIENT'] = Mail(app_)
 
     return app_

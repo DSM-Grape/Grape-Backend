@@ -13,8 +13,12 @@ class Config:
 
     SECRET_KEY = os.getenv('SECRET_KEY', '85c145a16bd6f6e1f3e104ca78c6a102')
 
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=30)
-    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=365)
+    MAIL_SERVER, MAIL_PORT = 'smtp.gmail.com', 587
+    MAIL_USERNAME, MAIL_PASSWORD, MAIL_USE_TLS = 'sporrow33', 'uursty199', True
+    # TODO(비밀번호는 환경변수에서 가져오도록 해야 함)
+
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_HEADER_TYPE = 'JWT'
 
     MONGODB_SETTINGS = {
