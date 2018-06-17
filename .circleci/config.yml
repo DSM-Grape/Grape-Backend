@@ -7,10 +7,9 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:7.10
-      - image: mongo:3.4.4
+      - image: circleci/python:3.6.5
 
-    working_directory: ~/repo
+    working_directory: ~/repo/Server/
 
     steps:
       - checkout
@@ -18,15 +17,13 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "package.json" }}
+          - deps1-{{ .Brancch }}-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
 
-      - run: npm install
+      - run:
+        command: |
+          virtualenv -p python3 .venv
+          . .venv/bin/activate
+          pip3 install -r requirements.txt
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run: npm test
+      - run: python3 -m "nose" tests/__init__.py
