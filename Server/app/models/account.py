@@ -11,6 +11,13 @@ class AccountModel(Document):
     id = StringField(
         primary_key=True
     )
+    # 서비스 자체 계정인 경우 이메일
+    # 연동 계정인 경우 해당 서비스에서 주는 ID
+
+    email_certified = BooleanField(
+        default=False
+    )
+    # 이메일 인증 여부
 
     pw = StringField()
     # required=False
@@ -21,9 +28,6 @@ class AccountModel(Document):
     # 1: Free
     # 2: Business
     # 3: First
-
-    email = StringField()
-    # required=False
 
     nickname = StringField()
     # required=False
