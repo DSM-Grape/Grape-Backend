@@ -95,3 +95,24 @@ class EmailResend(BaseResource):
 
         return Response('', 200)
 
+
+@api.resource('/certify/<code>')
+class EmailCertify(BaseResource):
+    def get(self, code):
+        redis_client = current_app.config['REDIS_CLIENT']
+
+        email = redis_client.get(code)
+
+        if not email:
+            abort(401)
+
+        account = AccountModel.objects(id=email).first()
+
+        if not account:
+            abort(401)
+
+        account.update(email_certified=True)
+
+        redis_client.delete(code)
+
+        return Response('Welcome!', 200)
