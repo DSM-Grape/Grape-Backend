@@ -76,3 +76,22 @@ class Signup(BaseResource):
 
         return Response('', 201)
 
+
+@api.resource('/email-resend/<email>')
+class EmailResend(BaseResource):
+    def get(self, email):
+        """
+        이메일 재전송
+        """
+        account = AccountModel.objects(email=email).first()
+
+        if not account:
+            return Response('', 204)
+
+        if account.email_certified:
+            return Response('', 208)
+
+        send_certify_mail(email)
+
+        return Response('', 200)
+
