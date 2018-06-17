@@ -17,14 +17,14 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - deps1-{{ .Brancch }}-{{ checksum "requirements.txt" }}
-          # fallback to using the latest cache if no exact match is found
+            - deps1-{{ .Brancch }}-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
 
       - run:
-        command: |
-          pip3 install virtualenv
-          virtualenv -p python3 .venv
-          . .venv/bin/activate
-          pip3 install -r requirements.txt
+          command:
+            - pip3 install virtualenv
+            - virtualenv -p python3 .venv;
+            - . .venv/bin/activate;
+            - pip3 install -r requirements.txt
 
       - run: python3 -m "nose" tests/__init__.py
