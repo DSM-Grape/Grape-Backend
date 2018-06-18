@@ -1,7 +1,9 @@
 import copy
+import jwt
 
 from datetime import datetime
 from unittest import TestCase as TC
+from uuid import UUID
 
 import pymongo
 from flask import Response
@@ -40,7 +42,7 @@ class TCBase(TC):
         ).save()
 
         self.fb_user = AccountModel(
-            id='secondary',
+            id='100006735372513',
             email_certified=False,
             nickname='secondary'
         ).save()
@@ -66,3 +68,17 @@ class TCBase(TC):
             *args,
             **kwargs
         )
+
+    def assert_response_tokens(self, data):
+        self.assertIn('accessToken', data)
+        self.assertIn('refreshToken', data)
+
+        access_token = data['accessToken']
+        refresh_token = data['refreshToken']
+
+        self.assertRegex(access_token, self.token_regex)
+        self.assertRegex(refresh_token, self.token_regex)
+
+        # (4) 데이터베이스 확인
+        self.assertTrue(AccessTokenModel.objects(identity=UUID(jwt.decode(access_token, self.app.secret_key)['identity'])))
+        self.assertTrue(RefreshTokenModel.objects(identity=UUID(jwt.decode(refresh_token, self.app.secret_key)['identity'])))
