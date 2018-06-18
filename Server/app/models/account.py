@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from flask_jwt_extended import create_access_token, create_refresh_token
+
 from mongoengine import *
 
 
@@ -60,14 +62,32 @@ class TokenModel(Document):
         default=uuid4
     )
 
+    @classmethod
+    def _create_token(cls, account, user_agent):
+        return cls(
+            key=cls.Key(owner=account, user_agent=user_agent)
+        ).save().identity
 
-class AccessTokenModel(Document):
+    @classmethod
+    def create_access_token(cls, account, user_agent):
+        return create_access_token(
+            str(cls._create_token(account, user_agent))
+        )
+
+    @classmethod
+    def create_refresh_token(cls, account, user_agent):
+        return create_refresh_token(
+            str(cls._create_token(account, user_agent))
+        )
+
+
+class AccessTokenModel(TokenModel):
     meta = {
         'collection': 'access_token'
     }
 
 
-class RefreshTokenModel(Document):
+class RefreshTokenModel(TokenModel):
     meta = {
         'collection': 'refresh_token'
     }

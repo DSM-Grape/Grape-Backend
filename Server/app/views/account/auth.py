@@ -3,13 +3,12 @@ import json
 import requests
 
 from flask import Blueprint, Response, abort, request
-from flask_jwt_extended import create_access_token, create_refresh_token
 from flask_restful import Api
 from flasgger import swag_from
 
 from werkzeug.security import check_password_hash
 
-from app.models.account import AccountModel, TokenModel, AccessTokenModel, RefreshTokenModel
+from app.models.account import AccountModel, AccessTokenModel, RefreshTokenModel
 from app.views import BaseResource, json_required
 
 api = Api(Blueprint(__name__, __name__))
@@ -41,16 +40,8 @@ class Auth(BaseResource):
                     return Response('', 204)
 
                 return {
-                    'accessToken': create_access_token(
-                        str(AccessTokenModel(
-                            key=TokenModel.Key(owner=account, user_agent=request.headers['USER_AGENT'])
-                        ).save().identity)
-                    ),
-                    'refreshToken': create_refresh_token(
-                        str(RefreshTokenModel(
-                            key=TokenModel.Key(owner=account, user_agent=request.headers['USER_AGENT'])
-                        ).save().identity)
-                    )
+                    'accessToken': AccessTokenModel.create_access_token(account, request.headers['USER_AGENT']),
+                    'refreshToken': RefreshTokenModel.create_refresh_token(account, request.headers['USER_AGENT'])
                 }
             else:
                 abort(401)
@@ -89,14 +80,6 @@ class FacebookAuth(BaseResource):
                 abort(401)
 
         return {
-            'accessToken': create_access_token(
-                str(AccessTokenModel(
-                    key=TokenModel.Key(owner=account, user_agent=request.headers['USER_AGENT'])
-                ).save().identity)
-            ),
-            'refreshToken': create_refresh_token(
-                str(RefreshTokenModel(
-                    key=TokenModel.Key(owner=account, user_agent=request.headers['USER_AGENT'])
-                ).save().identity)
-            )
+            'accessToken': AccessTokenModel.create_access_token(account, request.headers['USER_AGENT']),
+            'refreshToken': RefreshTokenModel.create_refresh_token(account, request.headers['USER_AGENT'])
         }
