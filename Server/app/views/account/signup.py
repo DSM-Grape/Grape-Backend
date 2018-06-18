@@ -58,6 +58,17 @@ class CheckEmail(BaseResource):
         return Response('', 409 if AccountModel.objects(email=email) else 200)
 
 
+@api.resource('/is-certified/email/<email>')
+class CheckIsCertifiedEmail(BaseResource):
+    def get(self, email):
+        """
+        인증된 이메일인지 확인
+        """
+        account = AccountModel.objects(id=email).first()
+
+        return Response('', 200 if account and account.email_certified else 204)
+
+
 @api.resource('/signup')
 class Signup(BaseResource):
     @json_required({'email': str, 'pw': str})
@@ -105,6 +116,9 @@ class EmailResend(BaseResource):
 @api.resource('/certify/<code>')
 class EmailCertify(BaseResource):
     def get(self, code):
+        """
+        이메일 인증 URL
+        """
         redis_client = current_app.config['REDIS_CLIENT']
 
         email = redis_client.get(code)
