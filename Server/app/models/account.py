@@ -71,5 +71,3 @@ class RefreshTokenModel(Document):
     meta = {
         'collection': 'refresh_token'
     }
-
-    pw_snapshot = StringField()
