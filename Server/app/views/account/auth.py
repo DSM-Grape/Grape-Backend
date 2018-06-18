@@ -35,7 +35,7 @@ class Auth(BaseResource):
                     abort(403)
 
                 if not account.nickname:
-                    return Response('', 204)
+                    return Response('', 205)
 
                 return {
                     'accessToken': AccessTokenModel.create_access_token(account, request.headers['USER_AGENT']),
@@ -49,7 +49,7 @@ class Auth(BaseResource):
 class FacebookAuth(BaseResource):
     FB_GRAPH_API_URL = 'https://graph.facebook.com/v2.6/{}?access_token=1925974487664670|D-wibfbjkOaHtINm_cwUSBx38k8'
 
-    def get_nickname_through_fb_id(self, fb_id):
+    def get_name_through_fb_id(self, fb_id):
         resp = requests.get(self.FB_GRAPH_API_URL.format(fb_id))
         # 페이스북 graph api를 이용해 사용자 데이터 조회
 
@@ -70,15 +70,24 @@ class FacebookAuth(BaseResource):
 
         if not account:
             # 사용자가 미존재, 회원가입을 시켜줌
-            name = self.get_nickname_through_fb_id(id)
+            name = self.get_name_through_fb_id(id)
 
             if name:
-                account = AccountModel(
-                    id=id,
-                    nickname=name
+                AccountModel(
+                    id=id
                 ).save()
+
+                return {
+                    'name': name
+                }, 205
             else:
                 abort(401)
+
+        if not account.nickname:
+            # 사용자는 존재하나 닉네임이 설정되어 있지 않은 경우
+            return {
+                'name': self.get_name_through_fb_id(id)
+            }, 205
 
         return {
             'accessToken': AccessTokenModel.create_access_token(account, request.headers['USER_AGENT']),
