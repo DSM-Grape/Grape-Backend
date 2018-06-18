@@ -1,5 +1,3 @@
-import json
-
 import requests
 
 from flask import Blueprint, Response, abort, request
@@ -51,13 +49,13 @@ class Auth(BaseResource):
 class FacebookAuth(BaseResource):
     FB_GRAPH_API_URL = 'https://graph.facebook.com/v2.6/{}?access_token=1925974487664670|D-wibfbjkOaHtINm_cwUSBx38k8'
 
-    def is_available_fb_id(self, fb_id):
+    def get_nickname_through_fb_id(self, fb_id):
         resp = requests.get(self.FB_GRAPH_API_URL.format(fb_id))
         # 페이스북 graph api를 이용해 사용자 데이터 조회
 
-        data = json.loads(resp.text)
+        data = resp.json()
 
-        return False if 'error' in data else True
+        return False if 'error' in data else data['name']
 
     @json_required({'id': str})
     def post(self):
@@ -71,10 +69,13 @@ class FacebookAuth(BaseResource):
         account = AccountModel.objects(id=id).first()
 
         if not account:
-            # 사용자가 미존재, 회원가입을 함께 시켜줌
-            if self.is_available_fb_id(id):
+            # 사용자가 미존재, 회원가입을 시켜줌
+            name = self.get_nickname_through_fb_id(id)
+
+            if name:
                 account = AccountModel(
-                    id=id
+                    id=id,
+                    nickname=name
                 ).save()
             else:
                 abort(401)

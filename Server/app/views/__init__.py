@@ -120,3 +120,9 @@ class Router:
     def init_app(self, app):
         app.after_request(after_request)
         app.register_error_handler(Exception, exception_handler)
+
+        from app.views.account import auth, info, refresh, signup
+        app.register_blueprint(auth.api.blueprint)
+        app.register_blueprint(info.api.blueprint)
+        app.register_blueprint(refresh.api.blueprint)
+        app.register_blueprint(signup.api.blueprint)
