@@ -16,6 +16,9 @@ api.prefix = ''
 
 
 def generate_email_certification_code(email):
+    """
+    전달된 email에 12자리의 인증 코드를 매핑하여 반환합니다. 인증 코드는 하루 동안만 유효합니다.
+    """
     redis_client = current_app.config['REDIS_CLIENT']
 
     while True:
@@ -28,7 +31,10 @@ def generate_email_certification_code(email):
             return code
 
 
-def send_certify_mail(target_email):
+def send_certify_mail(target_email: str):
+    """
+    전달된 target_email로 인증 이메일을 전송합니다.
+    """
     mail_client = current_app.config['MAIL_CLIENT']
 
     code = generate_email_certification_code(target_email)
@@ -104,7 +110,8 @@ class EmailCertify(BaseResource):
         email = redis_client.get(code)
 
         if not email:
-            abort(401)
+            # 유효하지 않은 코드
+            abort(404)
 
         account = AccountModel.objects(id=email).first()
 
