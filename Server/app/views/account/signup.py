@@ -55,7 +55,7 @@ class CheckEmail(BaseResource):
         """
         이메일 중복체크
         """
-        return Response('', 409 if AccountModel.objects(email=email) else 200)
+        return Response('', 409 if AccountModel.objects(id=email) else 200)
 
 
 @api.resource('/is-certified/email/<email>')
@@ -66,7 +66,7 @@ class CheckIsCertifiedEmail(BaseResource):
         """
         account = AccountModel.objects(id=email).first()
 
-        return Response('', 200 if account and account.email_certified else 204)
+        return Response('', 200 if account and account.email_certified else 401)
 
 
 @api.resource('/signup')
