@@ -7,6 +7,7 @@ from uuid import UUID
 
 import pymongo
 from flask import Response
+from redis import Redis
 
 from werkzeug.security import generate_password_hash
 
@@ -24,6 +25,8 @@ class TCBase(TC):
         self.db_name = mongo_setting.pop('db')
         self.mongo_client = pymongo.MongoClient(**mongo_setting)
 
+        self.redis_client = Redis(**self.app.config['REDIS_SETTINGS'])
+
         self.client = self.app.test_client()
         self.today = datetime.now().strftime('%Y-%m-%d')
         self.now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -35,7 +38,7 @@ class TCBase(TC):
         self.primary_user_pw = 'primary'
 
         self.primary_user = AccountModel(
-            id='primary',
+            id='mingyu.planb@gmail.com',
             pw=generate_password_hash(self.primary_user_pw),
             email_certified=True,
             nickname='primary'
@@ -60,6 +63,7 @@ class TCBase(TC):
 
     def tearDown(self):
         self.mongo_client.drop_database(self.db_name)
+        self.redis_client.flushall()
 
     def request(self, method, target_url_rule, token=None, *args, **kwargs) -> Response:
         return method(
