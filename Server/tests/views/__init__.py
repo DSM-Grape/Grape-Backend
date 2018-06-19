@@ -49,10 +49,10 @@ class TCBase(TC):
 
     def _generate_tokens(self):
         with self.app.app_context():
-            self.primary_user_access_token = AccessTokenModel.create_access_token(self.primary_user, 'TEST')
-            self.primary_user_refresh_token = RefreshTokenModel.create_refresh_token(self.primary_user, 'TEST')
-            self.fb_user_access_token = AccessTokenModel.create_access_token(self.fb_user, 'TEST')
-            self.fb_user_refresh_token = RefreshTokenModel.create_refresh_token(self.fb_user, 'TEST')
+            self.primary_user_access_token = 'JWT ' + AccessTokenModel.create_access_token(self.primary_user, 'TEST')
+            self.primary_user_refresh_token = 'JWT ' + RefreshTokenModel.create_refresh_token(self.primary_user, 'TEST')
+            self.fb_user_access_token = 'JWT ' + AccessTokenModel.create_access_token(self.fb_user, 'TEST')
+            self.fb_user_refresh_token = 'JWT ' + RefreshTokenModel.create_refresh_token(self.fb_user, 'TEST')
 
     def setUp(self):
         self._create_fake_account()
