@@ -14,12 +14,13 @@ from werkzeug.security import generate_password_hash
 from app import create_app
 from app.models.account import AccountModel, AccessTokenModel, RefreshTokenModel
 
+from config.dev import DevConfig
 from config.test import TestConfig
 
 
 class TCBase(TC):
     def __init__(self, *args, **kwargs):
-        self.app = create_app(TestConfig)
+        self.app = create_app(DevConfig, TestConfig)
 
         mongo_setting = copy.copy(self.app.config['MONGODB_SETTINGS'])
         self.db_name = mongo_setting.pop('db')

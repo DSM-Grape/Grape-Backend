@@ -1,3 +1,7 @@
+from werkzeug.security import check_password_hash
+
+from app.models.account import AccountModel
+
 from tests.views import TCBase
 
 
@@ -59,3 +63,47 @@ class TestEmailCertifiedCheck(TCBase):
         )
 
         self.assertEqual(self._request().status_code, 401)
+
+
+class TestSignup(TCBase):
+    """
+    회원가입을 테스트합니다.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(TestSignup, self).__init__(*args, **kwargs)
+
+        self.method = self.client.post
+        self.target_uri = '/signup'
+        self.new_user_email = 'city7311@naver.com'
+        self.new_user_pw = 'test'
+
+    def setUp(self):
+        super(TestSignup, self).setUp()
+
+        # ---
+
+        self._request = lambda *, email=self.new_user_email, pw=self.new_user_pw: self.request(
+            self.method,
+            self.target_uri,
+            json={
+                'email': email,
+                'pw': pw
+            }
+        )
+
+    def test_signup_success(self):
+        # (1) 회원가입
+        resp = self._request()
+
+        # (2) status code 201
+        self.assertEqual(resp.status_code, 201)
+
+        # (3) 데이터베이스 확인
+        account = AccountModel.objects(id=self.new_user_email).first()
+
+        self.assertTrue(account)
+        self.assertTrue(check_password_hash(account.pw, self.new_user_pw))
+
+    def test_signup_with_duplicated_email(self):
+        self.assertEqual(self._request(email=self.primary_user.id).status_code, 409)

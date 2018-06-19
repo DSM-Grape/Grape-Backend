@@ -81,13 +81,13 @@ class Signup(BaseResource):
         email = payload['email']
         pw = payload['pw']
 
-        if AccountModel.objects(email=email):
+        if AccountModel.objects(id=email):
             abort(409)
 
         send_certify_mail(email)
 
         AccountModel(
-            email=email,
+            id=email,
             pw=generate_password_hash(pw)
         ).save()
 
